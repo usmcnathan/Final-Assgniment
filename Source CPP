@@ -1,0 +1,451 @@
+
+// C++v1.cpp : This file contains the 'main' function. Program execution begins and ends there.
+
+#include <iostream>
+#include "Character.h"
+#include "Cadet.h"
+#include "Trainer.h"
+#include <ctime>
+#include <cstdlib>
+#include <thread>
+#include <mutex>
+#include <chrono>
+#include <algorithm>
+#include <memory>
+#include <exception>
+#include <fstream>// file types - in -out -trunc - app - at e - binary
+using namespace std;
+mutex m;
+string name, callsign;
+
+float myDiv(float num, float denum) { //myDiv takes 2 floats and divides them //used in preGame()
+    return num / denum;//return answer to divison 
+}
+
+void searchIter(int* ary, int start, int search_length) {//function can be called from thread - using pointer int* ary
+
+    int j = 0;
+    for (int i = start; i < start + search_length; i++) {
+        if (ary[i] == 600) {
+            cout << ("You cannot play right now...", j) << endl;//j is the number of violations (ary[i]600)
+            printf("\nYou have disgruntled the Central Computer!!\n");
+            system("pause");
+            abort();
+        }
+        ++j;
+    }
+}
+
+void GetInfo() {//FILE I/O 
+    fstream f;
+    string us;
+    int pn;//phone number
+    string mn;//rpg/fight
+    string ad;//mentally
+
+
+    f.open("t.text", ios::in); // open file and write to mtext for storage and access
+    string w;
+    while (getline(f, w)) {// writes to f string 
+
+
+
+        f.close();
+
+        f.open("t.text", ios::out | ios::in | ios::app);
+        cout << "Hello this is Mr. Nice Guy Games,  what is your name?" << endl;
+        cin >> us;//get name
+        cout << "Hello " << us << endl;
+        f << us << "\n";//write name
+        cout << us << ", this game is for 18+ only, what is your four digit birth year?" << endl;
+        cin >> pn;//get birth year
+        cout << "Hello " << us << ", your birth year is " << pn << endl;
+        f << pn << "\n";//write birth year
+        if (pn <= 2004) {
+            cout << "Shall we play a new game" << endl;
+        }
+        else {
+            cout << "In a few years kid!! Nice try " << us << "!!\n" << endl;
+            system("pause");
+            abort();
+        }
+        cout << "Thank you for verifying your age " << us << ".\n" << endl;
+        cout << "Are you expecting a rpg or a fight game?\n" << endl;
+        cin >> mn;//get rpg/fight
+        cout << "Huh? That is interesting...\n" << endl;
+
+        cout << " Are you mentally stable enough to handle a game with death? Yes or No?" << endl;
+        cin >> ad;
+        cout << "Thank you " << us << "." << endl;
+        system("pause");
+        cout << "These are your respones...\n" << endl;
+        cout << us << endl;
+        cout << pn << endl;
+        cout << mn << endl;
+        cout << ad << endl;
+
+        f.close();
+        
+    }
+}
+int PreGame() {//exceptions
+    int num_dumb = rand() % 99 + 1; // a replacement numerator if the player is dumb
+
+    float numm;//numerator
+    float denumm;//denumerator
+    cout << "This is my final Assignment for CSC275.\n" << endl;
+    cout << "Answer the questions honestly.\n" << endl;
+    cout << "Just to make sure im working Properly indulge me \n\n" << endl;
+    try {//try catch functions
+
+        cout << "Please enter a number larger than 10 " << endl;
+        cin >> numm;//numerator
+        if (numm < 10 || numm == 0) { //try to get a numerator and apply one if the user is dumb
+            throw num_dumb;
+        }
+        cout << "Please enter a second number less than the first " << endl;
+        cin >> denumm; //try to get a denumerator 
+    }
+    catch (int c) {//buffer - catch the idiots trying to use this program and return a message
+        cout << "Please follow directions it is need for a complete run\n"
+            "Terminating your life i mean the simulation " << endl;
+        return -1;
+    }
+    try { //try this if the denumerator is not a numeral
+        if (denumm == 0) {
+            throw 0;
+        }
+
+    }
+    catch (int myB) {//buffer - catch number for the idiots
+        if (myB == 0) {
+            cout << "You enter\ed Zero Denominator " << endl;
+            denumm = rand() % 10 + 1;
+        }
+
+    }
+    cout << "Your answer is " << myDiv (numm, denumm) ;//gives you an answer myDiv 
+    system("pause");
+    int numb = numm / denumm;
+
+    if (numb % 2 == 0) {
+        cout << "\nYour character is the Cadet...\n" << endl;
+    }
+    else {
+        cout << "\nYour Character is the Trainer...\n" << endl;
+    }
+
+}
+void DoneAttack(int type_i) {//functions based off multithread function
+    Trainer at("Cadet");
+    Cadet gt("Trainer");
+    if (type_i == 1) {// 1 comes from atack
+        m.lock();
+        printf("\nPreparing the drone Attack ,thread id: %d\n", this_thread::get_id());
+
+        for (int i = 3; i >= 0; i--) {
+            printf("countdown: %d\n", (this_thread::sleep_for(chrono::seconds(1)), i));
+        }
+        this_thread::sleep_for(chrono::seconds(1));
+        printf("You have grazed your opponent...\n");
+        printf("Damage applied!!!!!\n");
+        m.unlock();
+        this_thread::sleep_for(chrono::seconds(1));
+    }
+    else {//comes form simulation over taken
+        m.lock();
+        printf("\n\nWhats happening the round was over, thread id: %d\n", this_thread::get_id());
+
+        for (int i = 3; i >= 0; i--) {
+            printf("countdown: %d\n", (this_thread::sleep_for(chrono::seconds(1)), i));
+        }
+        this_thread::sleep_for(chrono::seconds(1));//chromo thread sleep
+        printf("You have been hit.....\n");
+        printf("Damage taken!!!!!\n");
+        this_thread::sleep_for(chrono::seconds(1));
+
+        m.unlock();
+    }
+
+    if (type_i == 95) {
+        m.lock();
+        printf("System override Mainframe now in control ,thread id: %d\n", this_thread::get_id());
+
+        for (int i = 3; i >= 0; i--) {
+            printf("countdown: %d\n", (this_thread::sleep_for(chrono::seconds(1)), i));
+
+        }
+        system("pause");
+        cout << "\nThe Mainframe has Defeated you and started attaking earth!!\n" << endl;
+        cout << "Who let a virus in the simulation!!\n" << endl;
+        printf("You have cost us dearly!\n");
+
+        m.unlock();
+    }
+}
+
+void loopFunc() {//multithread function
+    int n = 60;// 60 cycles
+    srand(time(0));//preparing random gen
+    int* ary = new int[n];//pointer for searchIter()
+    for (int i = 0; i < n; i++)
+    {
+        ary[i] = rand() % 999;
+    }
+    thread t1(searchIter, ary, 0, 19);//start search 0 through 19
+    thread t2(searchIter, ary, 20, 39);//start search 20 - 39...
+    thread t3(searchIter, ary, 40, 59);
+
+
+    t1.join();//make t1 joinable - give purpose - deatched(); means its not assingned and will run forever outside the function
+    t2.join();
+    t3.join();
+
+}
+struct Unip {//unique pointer structure
+
+    Unip() { cout << "\nPerhaps you should call it a day. You fought well  "; }//Constructor
+
+    ~Unip() { cout << "\nAgain ok"; }//Destructor
+};
+
+class PB //used for multi thread
+{
+public://public - can be viewed publicly
+    void DroneAttack() {
+        thread t1(DoneAttack, 1);
+        t1.join();//opens first thread via ms
+    }
+};
+
+class PB1 : public PB {
+    void GetInfo() {//FILE I/O 
+        fstream f;
+        string us;
+        int pn;//phone number
+        string mn;//rpg/fight
+        string ad;//mentally
+
+
+        f.open("t.text", ios::in); // open file and write to mtext for storage and access
+        string w;
+        while (getline(f, w)) {// writes to f string 
+
+
+
+            f.close();
+
+            f.open("t.text", ios::out | ios::in | ios::app);
+            cout << "Hello this is Mr. Nice Guy Games,  what is your name?" << endl;
+            cin >> us;//get name
+            cout << "Hello " << us << endl;
+            f << us << "\n";//write name
+            cout << us << ", this game is for 18+ only, what is your four digit birth year?" << endl;
+            cin >> pn;//get birth year
+            cout << "Hello " << us << ", your birth year is " << pn << endl;
+            f << pn << "\n";//write birth year
+            if (pn <= 2004) {
+                cout << "Shall we play a new game" << endl;
+            }
+            else {
+                cout << "In a few years kid!! Nice try " << us << "!!\n" << endl;
+                system("pause");
+                abort();
+            }
+            cout << "Thank you for verifying your age " << us << ".\n" << endl;
+            cout << "Are you expecting a rpg or a fight game?\n" << endl;
+            cin >> mn;//get rpg/fight
+            cout << "Huh? That is interesting...\n" << endl;
+
+            cout << " Are you mentally stable enough to handle a game with death? Yes or No?" << endl;
+            cin >> ad;
+            cout << "Thank you " << us << "." << endl;
+            system("pause");
+            cout << "These are your respones...\n" << endl;
+            cout << us << endl;
+            cout << pn << endl;
+            cout << mn << endl;
+            cout << ad << endl;
+
+            f.close();
+            PlayGame();
+        }
+    }
+public:
+    void Rev() {
+
+        thread t1(DoneAttack, 99);
+
+        t1.join();//opens first thread via rp
+    }
+};
+class PB2 : public PB
+{
+public:
+    void GotoSleep() {
+        thread t2(DoneAttack, 95);
+
+        t2.join();//opens first thread via rp
+    }
+
+};
+
+
+int determineAttack() {//attack random
+    int test = rand() % 10;
+    return (test > 4) ? 1 : 0;
+}
+int uniqueP()//function for unique pointer
+{
+    cout << "\nThis your opportonity to give up ";
+    system("pause");
+
+    unique_ptr<Unip> UP1(new Unip);//declared and intialized unip
+
+    cout << "\nJust quit already!!";
+    system("pause");
+    return 0;
+}
+
+void PlayGame() {//OOP +++++
+
+    Character ch("wimpy kid");// pulling from character - named ch.
+    Cadet gt("Cadet");//named gt.
+    gt.setHair(" Red");// ghost protocol
+    Trainer at("Trainer");//names at.
+    at.setHair("Matte Black"); //ghost protocol
+
+    ch.main();//main game beginning
+    ch.EndGame();//option to end
+    system("pause");
+    cout << "\n\nI am the trainer";
+    gt.BeatDown();//talk
+    cout << "\n\nMy health is \n"
+        << gt.getHealth() << ".\n";
+    cout << "\n\nMy HP is \n"
+        << gt.attack() << ".\n";
+    system("pause");
+
+
+    cout << "\n\nI am the Trainer and I do not take shit";
+    at.ThrowKicks();//talk
+    cout << "\n\nMy health is \n"
+        << at.getHealth() << ".\n";
+    cout << "\n\nMy HP is \n"
+        << at.attack() << ".\n";
+    system("pause");
+
+    int round = 0;// round 
+    while (true) {
+        PB PB;
+        PB1 PB1;
+        PB2 PB2;
+        round++;//add rounds
+        cout << "\nRound " << round << ", Fight!!!\n" << endl;
+        if (determineAttack()) {
+            cout << "\nCadet is attacking; HesDishing out a beating\n" << endl;
+            at.loseHealth(gt.attack());
+
+        }
+
+        else {
+            cout << "\nTraier is attacking; Take that beat down!!!\n" << endl;
+
+            gt.loseHealth(at.attack());
+        }
+        if (at.getHealth() <= 25) {//if health 25 or under
+            cout << "The gods have taken favor in Trainer!!\n" << endl;
+            system("pause");
+            cout << "\nYou are about to  bomb your oppponent....\n" << endl;
+            cout << "\nThe only problem is you may end up hurting yourself instead!!\n" << endl;
+            cout << "\nTrainer's health is " << at.getHealth() << ".\n" << endl;
+            cout << "\ncadet health is " << gt.getHealth() << ".\n" << endl;
+            int xy;
+            xy = rand() % 3 + 1;//random gen 1-3
+
+            if (xy == 1) {//attacker win
+                PB.DroneAttack();
+                at.loseHealth(gt.attack());
+            }
+            if (xy == 2) {//attacker loses
+                PB1.Rev(), 99;
+                gt.loseHealth(at.attack());
+            }
+            if (xy == 3) {//both lose
+                PB2.GotoSleep(), 95;
+                at.loseHealth(gt.attack());
+                gt.loseHealth(at.attack());
+            }
+        }
+        if (gt.getHealth() == 50 || at.getHealth() == 50)//if either character get to 50 health  
+        {
+            uniqueP();//unique pointer function
+        }
+        if (gt.getHealth() <= 25) {//if health 25 or under
+            cout << "The gods have taken favor in you Trainer!!\n" << endl;
+            system("pause");
+            cout << "\nYou are about to  bomb your oppponent....\n" << endl;
+            cout << "\nThe only problem is you may end up hurting yourself instead!!\n" << endl;
+            cout << "\nTrainer's health is " << at.getHealth() << ".\n" << endl;
+            cout << "\nCadet health is " << gt.getHealth() << ".\n" << endl;
+            int xy;
+            xy = rand() % 3 + 1;//rand gen
+
+            if (xy == 1) {//attacker wins
+                PB.DroneAttack();
+                gt.loseHealth(at.attack());
+
+            }
+            if (xy == 2) {//attacker loses
+                PB1.Rev(), 99;
+                at.loseHealth(gt.attack());
+            }
+            if (xy == 3) {//both lose
+                PB2.GotoSleep(), 95;
+                at.loseHealth(gt.attack());
+                gt.loseHealth(at.attack());
+            }
+        }
+        if (gt.getHealth() <= 0) {
+            cout << "\nyou are the Trainer man!!\n" << endl;
+            ch.Dead();
+            cout << "\nTrainer's health is " << at.getHealth() << ".\n" << endl;
+            at.ThrowKicks();
+            break;
+        }
+        if (at.getHealth() <= 0) {
+            cout << "\n you are the Trainer, you died man!!\n" << endl;
+            ch.Dead();
+            cout << "\nCadet's health is " << gt.getHealth() << ".\n" << endl;
+            gt.BeatDown();
+            break;
+        }
+        system("pause");
+        cout << "\nTrainer's health is " << at.getHealth() << ".\n" << endl;
+        cout << "\nCadet's health is " << gt.getHealth() << ".\n" << endl;
+    }
+
+    gt.Beat();
+
+}
+
+
+
+
+int main()
+{
+
+    PB bs;
+    PB1 rp;
+    while (true) {
+        for (int i = 0; i < 1; i++) {
+            GetInfo();//I/O
+            PreGame();//exception
+            loopFunc();//Multithread -classes
+            
+            PlayGame();//OOP - multi - inheretance - poly - classes - encapsulation 
+        }
+
+    }
+}
+
