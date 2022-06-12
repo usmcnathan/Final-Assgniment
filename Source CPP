@@ -268,7 +268,7 @@ class PB1 : public PB {
             cout << ad << endl;
 
             f.close();
-            PlayGame();
+            
         }
     }
 public:
